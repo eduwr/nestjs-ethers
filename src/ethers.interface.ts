@@ -1,10 +1,13 @@
 import { BytesLike } from '@ethersproject/bytes'
 import { Networkish } from '@ethersproject/networks'
+import type { WebSocketProvider } from '@ethersproject/providers'
 import { Wordlist } from '@ethersproject/wordlists'
 import { ModuleMetadata } from '@nestjs/common/interfaces'
 import { ConnectionInfo } from 'ethers/lib/utils'
 
 export type WordlistLike = string | Wordlist
+
+export type WebSocketLike = ConstructorParameters<typeof WebSocketProvider>[0]
 
 export interface InfuraProviderOptions {
   projectId?: string
@@ -29,6 +32,7 @@ export interface EthersModuleOptions extends Record<string, any> {
   token?: string | undefined
   waitUntilIsConnected?: boolean | undefined
   useDefaultProvider?: boolean | undefined
+  websocket?: WebSocketLike | (WebSocketLike | string)[] | undefined
 }
 
 export interface EthersModuleAsyncOptions extends Pick<ModuleMetadata, 'imports' | 'providers'> {

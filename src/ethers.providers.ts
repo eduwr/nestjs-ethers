@@ -17,13 +17,14 @@ import {
   Networkish,
   Network,
   StaticJsonRpcProvider,
+  WebSocketProvider,
 } from '@ethersproject/providers'
 import { Provider } from '@nestjs/common'
 import { ConnectionInfo } from 'ethers/lib/utils'
 import { defer, lastValueFrom } from 'rxjs'
 import { ETHERS_MODULE_OPTIONS, MAINNET_NETWORK, BINANCE_NETWORK, BINANCE_TESTNET_NETWORK } from './ethers.constants'
 import { EthersContract } from './ethers.contract'
-import { EthersModuleOptions, EthersModuleAsyncOptions } from './ethers.interface'
+import { EthersModuleOptions, EthersModuleAsyncOptions, WebSocketLike } from './ethers.interface'
 import { EthersSigner } from './ethers.signer'
 import { getEthersToken, getContractToken, getSignerToken } from './ethers.utils'
 
@@ -52,6 +53,7 @@ export async function createBaseProvider(options: EthersModuleOptions): Promise<
     quorum = 1,
     waitUntilIsConnected = true,
     useDefaultProvider = true,
+    websocket,
   } = options
 
   let providerNetwork: Network | undefined
@@ -103,6 +105,14 @@ export async function createBaseProvider(options: EthersModuleOptions): Promise<
 
       customInfos.forEach((customInfo) => {
         providers.push(new StaticJsonRpcProvider(customInfo, providerNetwork))
+      })
+    }
+
+    if (websocket) {
+      const websocketInfos: (WebSocketLike | string)[] = !Array.isArray(websocket) ? [websocket] : websocket
+
+      websocketInfos.forEach((websocketInfo) => {
+        providers.push(new WebSocketProvider(websocketInfo, providerNetwork))
       })
     }
 
